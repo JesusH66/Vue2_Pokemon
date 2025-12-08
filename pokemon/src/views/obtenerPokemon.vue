@@ -32,6 +32,10 @@
         </div>
       </div>
 
+      <p class="descripcion">
+        {{ descripcion }}
+      </p>
+
       <button class="back-btn" @click="$router.push('/pokemones')">
         ⬅ Regresar
       </button>
@@ -47,7 +51,8 @@ export default {
 
   data() {
     return {
-      pokemon: null
+      pokemon: null,
+      descripcion: ""
     }
   },
 
@@ -55,6 +60,17 @@ export default {
     const nombre = this.$route.params.nombre
     const res = await axios.get(`https://pokeapi.co/api/v2/pokemon/${nombre}`)
     this.pokemon = res.data
+
+    // Petiición para que muestre la descripción del Pokémon
+    const especie = await axios.get(`https://pokeapi.co/api/v2/pokemon-species/${this.pokemon.id}`)
+
+    const entrada = especie.data.flavor_text_entries.find(
+      e => e.language.name === "es"
+    ) || especie.data.flavor_text_entries.find(
+      e => e.language.name === "en"
+    )
+
+    this.descripcion = entrada ? entrada.flavor_text.replace(/\n|\f/g, " ") : "Descripción no disponible."
   }
 }
 </script>
@@ -127,6 +143,17 @@ export default {
 .lista {
   margin-top: 5px;
   padding-left: 20px;
+}
+
+.descripcion {
+  margin-top: 25px;
+  font-size: 18px;
+  line-height: 1.6;
+  background: #fff3a1;
+  padding: 20px;
+  border: 4px solid #2a75bb;
+  border-radius: 14px;
+  box-shadow: 0 4px 0 #b99300;
 }
 
 .back-btn {

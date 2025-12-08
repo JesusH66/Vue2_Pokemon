@@ -3,10 +3,23 @@
     <div class="panel">
       <h1 class="titulo">Pokémon - Primera Generación</h1>
 
+      <input
+      type="text"
+      v-model="busqueda"
+      placeholder="Buscar Pokémon..."
+      class="busqueda" />
+
+      <p
+        v-if="busqueda.trim() && pokemonesFiltrados.length === 0"
+        class="resultados"
+        >
+        No se encontró ningún Pokémon en base a la búsqueda.
+        </p>
+
       <div class="pokemon-grid">
         <div
           class="pokemon-card"
-          v-for="pokemon in pokemones"
+          v-for="pokemon in pokemonesFiltrados"
           :key="pokemon.name"
           @click="verPokemon(pokemon)"
         >
@@ -22,9 +35,25 @@
     export default {
         name: "listarPokemones",
 
+        data(){
+            return {
+                busqueda: ""
+            }
+        },
+
         computed: {
             pokemones(){
                 return this.$store.getters.getPokemones
+            },
+
+            pokemonesFiltrados(){
+                if(!this.busqueda.trim()){
+                    return this.pokemones
+                }
+            
+                return this.pokemones.filter(p =>
+                    p.name.toLowerCase().includes(this.busqueda.toLowerCase())
+                )
             }
         },
 
@@ -67,6 +96,30 @@
   font-weight: bold;
   color: #2a75bb;
   margin-bottom: 30px;
+}
+
+.busqueda {
+  width: 60%;
+  max-width: 350px;
+  padding: 10px;
+  margin-bottom: 25px;
+  border-radius: 10px;
+  border: 2px solid #2a75bb;
+  outline: none;
+  font-size: 10px;
+  transition: 0.2s ease-in-out  
+}
+
+.busqueda:focus {
+  border-color: #e60000;
+  transform: scale(1.03); 
+}
+
+.resultados {
+  font-size: 18px;
+  color: #e60000;
+  font-weight: bold;
+  margin-top: 15px;
 }
 
 .pokemon-grid {
